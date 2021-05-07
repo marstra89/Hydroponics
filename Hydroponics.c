@@ -129,6 +129,8 @@ int main(int argc, char *argv[]) {
     int time_led_off= 23;	//tid i timmar då led släcks
     int h; //humidity
     int t; //temperature in degrees Celsius
+    int h2o=1;
+    float ph=14;
 
     //for(int i=0; i<3; i++){
 
@@ -227,7 +229,6 @@ int main(int argc, char *argv[]) {
         else{
             // Convert the data
             int raw_adc = data[0];
-            float ph;
 
             //omvandlar enligt vår ph-sensors kalibrering
             ph= (19.63-((4.0/57.0)*raw_adc));
@@ -243,7 +244,7 @@ int main(int argc, char *argv[]) {
 	    char buf[1023] = {};
 	    char query_string[] = {"INSERT INTO datalog(temp, humid, ph, h2o) VALUES(%d, %d, %f, %d)"}; 
 	    
-	    sprintf(buf, query_string, t, h);
+	    sprintf(buf, query_string, t, h, ph, h2o);
 	    if (mysql_query(con, buf)){
 		finish_with_error(con);
 	    }
