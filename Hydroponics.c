@@ -1,6 +1,6 @@
 // Hydroponics
 
-//#include <mariadb/mysql.h>
+#include <mariadb/mysql.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <stdio.h>
@@ -82,12 +82,12 @@ int dht11_read_val(int *h, int *t) {
     }
 }
 
-/*void finish_with_error(MYSQL *con) {
+void finish_with_error(MYSQL *con) {
     fprintf(stderr, "%s\n", mysql_error(con));
     mysql_close(con);
     exit(1);
 }
-*/
+
 
 // slut funktioner*************************************************************************
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
     digitalWrite(tmp_varning, LOW);
     digitalWrite(level_varning, LOW);
 
-/*    // Definerar mysql handle
+    // Definerar mysql handle
     MYSQL *con = mysql_init(NULL);
     
     if (con == NULL){
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 	mysql_close(con);
 	exit(1);
     }
-*/
+
 
 
     //for(int look=0; look<3; look++){ //ändra till evighets-while
@@ -236,7 +236,7 @@ int main(int argc, char *argv[]) {
 
         }
 
-/*        /// START - SPARAR DATA FRÅN VARIABLER TILL DATABAS
+        /// START - SPARAR DATA FRÅN VARIABLER TILL DATABAS
 	    
 	    char buf[1023] = {};
 	    char query_string[] = {"INSERT INTO datalog(temp, humid) VALUES(%d, %d)"}; 
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
 		finish_with_error(con);
 	    }
 	    ///// SLUT - SPARA DATA I DATABAS
-*/
+
     }
 
 	digitalWrite(relay, LOW);
