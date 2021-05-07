@@ -242,28 +242,28 @@ int main(int argc, char *argv[]) {
 		    }
 		    ///// SLUT - SPARA DATA I DATABAS
 
-	    }
-	    //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
-	    char buf2[1023] = {};
-	    char query_string2[] = {"DELETE FROM datalog WHERE dateandtime < CURRENT_TIMESTAMP - INTERVAL 7 DAY"}; //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
-
-	    sprintf(buf2, query_string2);
-	    if (mysql_query(con, buf2)){
-		finish_with_error(con);
-	    }
-	    // SLUT
 	    
-	    //styr lampa kolla seting 1 ggr per sek i 10 min
-	    for(int wait=0; wait<600; wait++){
-		    if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
-			    digitalWrite(relay, HIGH);
-			    delay(1000);
-			}
-			else{
-			    digitalWrite(relay, LOW);
-			    delay(1000);
-			}
-	    }
+		    //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
+		    char buf2[1023] = {};
+		    char query_string2[] = {"DELETE FROM datalog WHERE dateandtime < CURRENT_TIMESTAMP - INTERVAL 7 DAY"}; //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
+
+		    sprintf(buf2, query_string2);
+		    if (mysql_query(con, buf2)){
+			finish_with_error(con);
+		    }
+		    // SLUT
+
+		    //styr lampa kolla seting 1 ggr per sek i 10 min
+		    for(int wait=0; wait<600; wait++){
+			    if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+				    digitalWrite(relay, HIGH);
+				    delay(1000);
+				}
+				else{
+				    digitalWrite(relay, LOW);
+				    delay(1000);
+				}
+		    }
 		    
 
     } //slut på en evighet
