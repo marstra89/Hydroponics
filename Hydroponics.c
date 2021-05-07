@@ -190,11 +190,13 @@ int main(int argc, char *argv[]) {
 
             if(digitalRead(level)<1){
                 printf("vattennivå låg!\n");
-        digitalWrite(level_varning, HIGH);
+        	digitalWrite(level_varning, HIGH);
+		h2o=0;
             }
             else{
                 printf("Vattennivå ok\n");
-        digitalWrite(level_varning, LOW);
+        	digitalWrite(level_varning, LOW);
+		h2o=1;
             }
             delay(1000);
         //}
@@ -239,7 +241,7 @@ int main(int argc, char *argv[]) {
         /// START - SPARAR DATA FRÅN VARIABLER TILL DATABAS
 	    
 	    char buf[1023] = {};
-	    char query_string[] = {"INSERT INTO datalog(temp, humid) VALUES(%d, %d)"}; 
+	    char query_string[] = {"INSERT INTO datalog(temp, humid, ph, h2o) VALUES(%d, %d, %f, %d)"}; 
 	    
 	    sprintf(buf, query_string, t, h);
 	    if (mysql_query(con, buf)){
