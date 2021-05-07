@@ -139,124 +139,139 @@ int main(int argc, char *argv[]) {
     time_t current_time = time(NULL);
     struct tm tm = *localtime(&current_time);
 
-    for(int look=0; look<3; look++){ //ändra till evighets-while
+    //for(int look=0; look<3; look++){ //ändra till evighets-while
+	while(1){     //en evighet
 
-        // read the sensor until we get a pair of valid measurements
-        // but bail out if we tried too many times
-        int retval=1;
-        int tries=0;
-        //for(int look=0; look<8; look++){
-        while (retval != 0 && tries < MAX_TRIES)
-        {
-            retval = dht11_read_val(&h, &t);
-            if (retval == 0) {
-                if (print_time == 1) {
-                    printf("%4d-%02d-%02d,", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday);
-                    printf("%02d:%02d,", tm.tm_hour, tm.tm_min);
-                }
-                printf("%d procents luftfuktighet,", h);
+		// read the sensor until we get a pair of valid measurements
+		// but bail out if we tried too many times
+		int retval=1;
+		int tries=0;
+		//for(int look=0; look<8; look++){
+		while (retval != 0 && tries < MAX_TRIES)
+		{
+		    retval = dht11_read_val(&h, &t);
+		    if (retval == 0) {
+			if (print_time == 1) {
+			    printf("%4d-%02d-%02d,", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday);
+			    printf("%02d:%02d,", tm.tm_hour, tm.tm_min);
+			}
+			printf("%d procents luftfuktighet,", h);
 
-                printf("%d Celsius\n", t);
+			printf("%d Celsius\n", t);
 
-            } else {
-                delay(1000);
-        }
-            tries += 1;
-        }
-    
-
-        // ********************************************************************************
-
-        if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
-            digitalWrite(relay, HIGH);
-            delay(5000);
-        }
-        else{
-            digitalWrite(relay, LOW);
-            delay(1000);
-        }
+		    } else {
+			delay(1000);
+		}
+		    tries += 1;
+		}
 
 
-        /* Read from I2C and print temperature */
-        int fd = wiringPiI2CSetup(address);
+		// ********************************************************************************
 
-        //for(int k=0; k<3; k++){
+		
+		/* Read from I2C and print temperature */
+		int fd = wiringPiI2CSetup(address);
 
-            printf("%.2f Celsius just nu\n", getTemperature(fd) );
-        if(getTemperature(fd)>tmp_central){
-        digitalWrite(tmp_varning, HIGH);
-        }
-        else{
-        digitalWrite(tmp_varning, LOW);
-        }
+		//for(int k=0; k<3; k++){
 
-            if(digitalRead(level)<1){
-                printf("vattennivå låg!\n");
-        	digitalWrite(level_varning, HIGH);
-		h2o=0;
-            }
-            else{
-                printf("Vattennivå ok\n");
-        	digitalWrite(level_varning, LOW);
-		h2o=1;
-            }
-            delay(1000);
-        //}
+		    printf("%.2f Celsius just nu\n", getTemperature(fd) );
+		if(getTemperature(fd)>tmp_central){
+		digitalWrite(tmp_varning, HIGH);
+		}
+		else{
+		digitalWrite(tmp_varning, LOW);
+		}
 
-        // *********************************************************************************''
+		    if(digitalRead(level)<1){
+			printf("vattennivå låg!\n");
+			digitalWrite(level_varning, HIGH);
+			h2o=0;
+		    }
+		    else{
+			printf("Vattennivå ok\n");
+			digitalWrite(level_varning, LOW);
+			h2o=1;
+		    }
+		    delay(1000);
+		//}
 
-        // Create I2C bus
-        int file;
-        char *bus = "/dev/i2c-1";
-        if ((file = open(bus, O_RDWR)) < 0)
-        {
-            printf("Failed to open the bus. \n");
-            exit(1);
-        }
-        // Get I2C device, ADS7830 I2C address is 0x4b(72)
-        ioctl(file, I2C_SLAVE, 0x4b);
+		// *********************************************************************************''
 
-        // Differential inputs, Channel-0, Channel-1 selected
-        char config[1] = {0x04};
-        write(file, config, 1);
-        sleep(1);
+		// Create I2C bus
+		int file;
+		char *bus = "/dev/i2c-1";
+		if ((file = open(bus, O_RDWR)) < 0)
+		{
+		    printf("Failed to open the bus. \n");
+		    exit(1);
+		}
+		// Get I2C device, ADS7830 I2C address is 0x4b(72)
+		ioctl(file, I2C_SLAVE, 0x4b);
 
-        // Read 1 byte of data
-        char data[1]={0};
-        if(read(file, data, 1) != 1){
-                printf("Error : Input/output Error \n");
-        }
-        else{
-            // Convert the data
-            int raw_adc = data[0];
+		// Differential inputs, Channel-0, Channel-1 selected
+		char config[1] = {0x04};
+		write(file, config, 1);
+		sleep(1);
 
-            //omvandlar enligt vår ph-sensors kalibrering
-            ph= (19.63-((4.0/57.0)*raw_adc));
+		// Read 1 byte of data
+		char data[1]={0};
+		if(read(file, data, 1) != 1){
+			printf("Error : Input/output Error \n");
+		}
+		else{
+		    // Convert the data
+		    int raw_adc = data[0];
 
-            // Output data to screen
-            printf("Ph-värde: %.2f \n", ph);
-            //printf("Raw-värde: %d \n", raw_adc);
+		    //omvandlar enligt vår ph-sensors kalibrering
+		    ph= (19.63-((4.0/57.0)*raw_adc));
 
-        }
+		    // Output data to screen
+		    printf("Ph-värde: %.2f \n", ph);
+		    //printf("Raw-värde: %d \n", raw_adc);
 
-        /// START - SPARAR DATA FRÅN VARIABLER TILL DATABAS
-	    
-	    char buf[1023] = {};
-	    char query_string[] = {"INSERT INTO datalog(temp, humid, ph, h2o) VALUES(%d, %d, %f, %d)"}; 
-	    
-	    sprintf(buf, query_string, t, h, ph, h2o);
-	    if (mysql_query(con, buf)){
+		}
+
+		/// START - SPARAR DATA FRÅN VARIABLER TILL DATABAS
+
+		    char buf[1023] = {};
+		    char query_string[] = {"INSERT INTO datalog(temp, humid, ph, h2o) VALUES(%d, %d, %f, %d)"}; 
+
+		    sprintf(buf, query_string, t, h, ph, h2o);
+		    if (mysql_query(con, buf)){
+			finish_with_error(con);
+		    }
+		    ///// SLUT - SPARA DATA I DATABAS
+
+	    }
+	    //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
+	    char buf2[1023] = {};
+	    char query_string2[] = {"DELETE FROM datalog WHERE dateandtime < CURRENT_TIMESTAMP - INTERVAL 7 DAY"}; //RADERAR DATA SOM ÄR ÄLDRE ÄN 7 DAGAR
+
+	    sprintf(buf2, query_string2);
+	    if (mysql_query(con, buf2)){
 		finish_with_error(con);
 	    }
-	    ///// SLUT - SPARA DATA I DATABAS
+	    // SLUT
+	    
+	    //styr lampa kolla seting 1 ggr per sek i 10 min
+	    for(int wait=0; wait<600; wait++){
+		    if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+			    digitalWrite(relay, HIGH);
+			    delay(1000);
+			}
+			else{
+			    digitalWrite(relay, LOW);
+			    delay(1000);
+			}
+	    }
+		    
 
-    }
-
-	digitalWrite(relay, LOW);
-	digitalWrite(level_varning, LOW);
-	digitalWrite(on_off, LOW);
-	digitalWrite(tmp_varning, LOW);
-	return 0;
+    } //slut på en evighet
+    digitalWrite(relay, LOW);
+    digitalWrite(level_varning, LOW);
+    digitalWrite(on_off, LOW);
+    digitalWrite(tmp_varning, LOW);
+    return 0;
     //****************************************************************************
 
 
