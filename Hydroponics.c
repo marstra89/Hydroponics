@@ -254,8 +254,32 @@ int main(int argc, char *argv[]) {
 		    // SLUT
 
 		    //styr lampa kolla seting 1 ggr per sek i 10 min
+		
 		    for(int wait=0; wait<600; wait++){
-			    if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+			     if(mysql_query(con, "SELECT led FROM datalog WHERE $
+                                finish_with_error(con);
+                                }
+                            MYSQL_RES *result = mysql_store_result(con);
+                            if (result == NULL){
+                                finish_with_error(con);
+                                }
+                            int num_fields = mysql_num_fields(result);
+                            MYSQL_ROW row;
+                            while ((row = mysql_fetch_row(result))){
+                                for(int d =0; d< num_fields; d++){
+                                        //lampa= strcmp(row[d], row[d-1]);
+
+                                        lampa= atoi(row[d]);
+                                        printf("string: %s ", row[d] ? row[d] :$
+                                        printf("lampa: %d", lampa);
+                                }
+                                printf("\n");
+                            }
+                            mysql_free_result(result);
+
+
+
+                           if(lampa==1){  // if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
 				    digitalWrite(relay, HIGH);
 				    delay(1000);
 				}
