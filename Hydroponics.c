@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
 		    int raw_adc = data[0];
 
 		    //omvandlar enligt vår ph-sensors kalibrering
-		    ph= (19.63-((1.0/15.0)*raw_adc));
+		    ph= (13.33-((1.0/15.0)*raw_adc));
 
 		    // Output data to screen
 		    printf("Ph-värde: %.2f \n", ph);
