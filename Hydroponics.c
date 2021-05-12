@@ -279,7 +279,15 @@ int main(int argc, char *argv[]) {
 
 
 
-                           if(lampa==1){  // if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+			   if(lampa==1){  // if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+				    digitalWrite(relay, HIGH);
+				    delay(1000);
+				}
+			   if(lampa==0){  // if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
+				    digitalWrite(relay, LOW);
+				    delay(1000);
+				}
+                           if(lampa==3){  // if(tm.tm_hour> time_led_on && tm.tm_hour< time_led_off){
 				    digitalWrite(relay, HIGH);
 				    delay(1000);
 				}
