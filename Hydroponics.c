@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #define MAX_TIME 85
 #define MAX_TRIES 100
+#define WAIT_TIME 600
 #define DHT11PIN 4 //7
 #define relay 17
 #define level 10
@@ -134,13 +135,14 @@ int main(int argc, char *argv[]) {
 
     //for(int i=0; i<3; i++){
 
-
+    while(1){     //en evighet
+		
     int print_time = 1;
     time_t current_time = time(NULL);
     struct tm tm = *localtime(&current_time);
 
     //for(int look=0; look<3; look++){ //ändra till evighets-while
-	while(1){     //en evighet
+	//while(1){     //en evighet
 
 		// read the sensor until we get a pair of valid measurements
 		// but bail out if we tried too many times
@@ -255,7 +257,7 @@ int main(int argc, char *argv[]) {
 
 		    //styr lampa kolla seting 1 ggr per sek i 10 min
 		
-		    for(int wait=0; wait<600; wait++){
+		    for(int wait=0; wait<WAIT_TIME; wait++){
 			     if(mysql_query(con, "SELECT led FROM datalog WHERE $
                                 finish_with_error(con);
                                 }
